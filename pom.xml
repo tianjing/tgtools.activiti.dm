@@ -39,6 +39,11 @@
             <artifactId>Dm7JdbcDriver16</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.4</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>

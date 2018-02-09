@@ -9,6 +9,7 @@ package tgtools.activiti.impl;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.util.IoUtil;
+import org.activiti.engine.impl.util.ReflectUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
@@ -52,18 +53,28 @@ public class ProcessEngineConfigurationImpl extends org.activiti.spring.SpringPr
         databaseTypeMappings.setProperty("DB2/PTX", "db2");
         databaseTypeMappings.setProperty("DB2/2", "db2");
         databaseTypeMappings.setProperty("DM DBMS", "dm");
+        databaseTypeMappings.setProperty("DM6 DBMS", "dm6");
         return databaseTypeMappings;
     }
-
+    @Override
+    protected InputStream getMyBatisXmlConfigurationSteam() {
+        if (isDM6()) {
+            return ReflectUtil.getResourceAsStream("tgtools/activiti/db/mappings/mappings.xml");
+        }
+        return super.getMyBatisXmlConfigurationSteam();
+    }
     @Override
     protected void initSqlSessionFactory()
     {
-        DbSqlSessionFactory.addDM();
+        DbSqlSessionFactory.addDM7();
+        DbSqlSessionFactory.addDM6();
         if(this.sqlSessionFactory == null) {
             InputStream inputStream = null;
             try {
                 inputStream = this.getMyBatisXmlConfigurationSteam();
-                Environment e = new Environment("default", this.transactionFactory, this.dataSource);
+
+                Environment   e = new Environment("default", this.transactionFactory, this.dataSource);
+
                 InputStreamReader reader = new InputStreamReader(inputStream);
                 Properties properties = new Properties();
                 properties.put("prefix", this.databaseTablePrefix);
@@ -84,5 +95,11 @@ public class ProcessEngineConfigurationImpl extends org.activiti.spring.SpringPr
                 IoUtil.closeSilently(inputStream);
             }
         }
+    }
+
+
+    private boolean isDM6()
+    {
+        return "dm6".equals(getDatabaseType());
     }
 }
