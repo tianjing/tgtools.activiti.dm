@@ -6,7 +6,7 @@
 <!--source https://github.com/tianjing/tgtools.activiti.dm.git -->
     <groupId>tgtools</groupId>
     <artifactId>tgtools.activiti.dm</artifactId>
-    <version>5.22.0.1</version>
+    <version>5.22.0.2</version>
 
     <properties>
         <activiti.version>5.22.0</activiti.version>
@@ -43,6 +43,12 @@
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
             <version>3.4.4</version>
+        </dependency>
+        <!--tgtools 工具包 开始 -->
+        <dependency>
+            <groupId>tgtools</groupId>
+            <artifactId>tgtools.core</artifactId>
+            <version>1.0.271</version>
         </dependency>
     </dependencies>
     <repositories>

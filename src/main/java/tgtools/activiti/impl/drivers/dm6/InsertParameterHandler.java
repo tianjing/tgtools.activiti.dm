@@ -2,6 +2,7 @@ package tgtools.activiti.impl.drivers.dm6;
 
 import org.activiti.engine.impl.persistence.entity.ByteArrayRef;
 import org.activiti.engine.impl.variable.VariableType;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -17,6 +18,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeException;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import tgtools.db.DataBaseFactory;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -127,7 +129,7 @@ public class InsertParameterHandler implements ParameterHandler {
         }
         else if(pTypeHandler instanceof org.apache.ibatis.type.StringTypeHandler)
         {
-            value="'"+pValue.toString()+"'";
+            value="'"+ tgtools.util.SqlStrHelper.escapeAll(DataBaseFactory.DBTYPE_DM6,pValue.toString())+"'";
         }
         else if(pTypeHandler instanceof org.apache.ibatis.type.IntegerTypeHandler)
         {
