@@ -49,7 +49,7 @@
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:3.2.3.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: tgtools.dm:Dm7JdbcDriver16:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.4.4" level="project" />
-    <orderEntry type="library" name="Maven: tgtools:tgtools.core:1.0.271" level="project" />
+    <orderEntry type="library" name="Maven: com.github.tianjing:tgtools.core:1.0.275" level="project" />
     <orderEntry type="library" name="Maven: net.sf.ehcache:ehcache:2.10.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.2.3" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.2.3" level="project" />
