@@ -84,7 +84,7 @@
                 <version>2.5.3</version>
                 <configuration>
                     <providerImplementations>
-                        <git>jgit</git>
+                        <git>git</git>
                     </providerImplementations>
                     <username>xxxusername</username>
                     <password>xxxxpasswrod</password>
