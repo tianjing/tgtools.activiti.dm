@@ -2,10 +2,8 @@ package tgtools.activiti.impl.drivers.dm6;
 
 import org.activiti.engine.impl.persistence.entity.ByteArrayRef;
 import org.activiti.engine.impl.variable.VariableType;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -14,8 +12,6 @@ import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.TypeException;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import tgtools.db.DataBaseFactory;
@@ -23,10 +19,8 @@ import tgtools.db.DataBaseFactory;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 田径
@@ -50,6 +44,39 @@ public class InsertParameterHandler implements ParameterHandler {
         this.boundSql = boundSql;
         changeSql();
     }
+
+    public static String bytesToHexString(byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder("");
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < src.length; i++) {
+            int v = src[i] & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString();
+    }
+
+    public static String bytesToHexString(Byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder("");
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < src.length; i++) {
+            int v = src[i] & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString();
+    }
+
     @Override
     public Object getParameterObject() {
         return null;
@@ -59,13 +86,13 @@ public class InsertParameterHandler implements ParameterHandler {
     public void setParameters(PreparedStatement ps) throws SQLException {
 
     }
-    private void changeSql()
-    {
+
+    private void changeSql() {
         ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 
-        String sql=boundSql.getSql();
-        sql=StringUtils.replace(sql,"?","#{param}");
+        String sql = boundSql.getSql();
+        sql = StringUtils.replace(sql, "?", "#{param}");
 
         if (parameterMappings != null) {
             for (int i = 0; i < parameterMappings.size(); i++) {
@@ -86,7 +113,7 @@ public class InsertParameterHandler implements ParameterHandler {
                     }
                     TypeHandler typeHandler = parameterMapping.getTypeHandler();
                     //替换sql中的占位符
-                    sql = StringUtils.replace(sql,"#{param}",getValue(value,typeHandler),1);
+                    sql = StringUtils.replace(sql, "#{param}", getValue(value, typeHandler), 1);
                 }
             }
             changeSql(sql);
@@ -96,62 +123,51 @@ public class InsertParameterHandler implements ParameterHandler {
 
     /**
      * 通过反射替换原有sql
+     *
      * @param pSql
      */
-    private void changeSql(String pSql)
-    {
+    private void changeSql(String pSql) {
         try {
-            Field field=boundSql.getClass().getDeclaredField("sql");
+            Field field = boundSql.getClass().getDeclaredField("sql");
             field.setAccessible(true);
-            field.set(boundSql,pSql);
-        }catch (Exception e)
-        {
+            field.set(boundSql, pSql);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
      * 根据类型要求获取值
+     *
      * @param pValue
      * @param pTypeHandler
      * @return
      */
-    private String getValue(Object pValue,TypeHandler pTypeHandler)
-    {
-        String value="null";
-        if(null==pValue)
-        {
+    private String getValue(Object pValue, TypeHandler pTypeHandler) {
+        String value = "null";
+        if (null == pValue) {
             return value;
         }
-        if(pTypeHandler instanceof org.activiti.engine.impl.db.IbatisVariableTypeHandler)
-        {
-            value="'"+((VariableType)pValue).getTypeName()+"'";
-        }
-        else if(pTypeHandler instanceof org.apache.ibatis.type.StringTypeHandler)
-        {
-            value="'"+ tgtools.util.SqlStrHelper.escapeAll(DataBaseFactory.DBTYPE_DM6,pValue.toString())+"'";
-        }
-        else if(pTypeHandler instanceof org.apache.ibatis.type.IntegerTypeHandler)
-        {
-            value=pValue.toString();
-        }
-        else if(pTypeHandler instanceof org.activiti.engine.impl.persistence.ByteArrayRefTypeHandler)
-        {
-            if(null!=pValue && (pValue instanceof ByteArrayRef)&&null!=((ByteArrayRef)pValue).getId()) {
-                value = "'"+((ByteArrayRef)pValue).getId()+"'";
+        if (pTypeHandler instanceof org.activiti.engine.impl.db.IbatisVariableTypeHandler) {
+            value = "'" + ((VariableType) pValue).getTypeName() + "'";
+        } else if (pTypeHandler instanceof org.apache.ibatis.type.StringTypeHandler) {
+            value = "'" + tgtools.util.SqlStrHelper.escapeAll(DataBaseFactory.DBTYPE_DM6, pValue.toString()) + "'";
+        } else if (pTypeHandler instanceof org.apache.ibatis.type.IntegerTypeHandler) {
+            value = pValue.toString();
+        } else if (pTypeHandler instanceof org.activiti.engine.impl.persistence.ByteArrayRefTypeHandler) {
+            if (null != pValue && (pValue instanceof ByteArrayRef) && null != ((ByteArrayRef) pValue).getId()) {
+                value = "'" + ((ByteArrayRef) pValue).getId() + "'";
             }
-        }
-        else if(pTypeHandler instanceof org.apache.ibatis.type.DoubleTypeHandler)
-        {
-            value=pValue.toString();
-        }
-        else if(pTypeHandler instanceof org.apache.ibatis.type.LongTypeHandler)
-        {
-            value=pValue.toString();
-        }
-        else if(pTypeHandler instanceof org.apache.ibatis.type.DateTypeHandler)
-        {
-            value= "'"+DateFormatUtils.format((Date)pValue,"yyyy-MM-dd hh:mm:ss")+"'";
+        } else if (pTypeHandler instanceof org.apache.ibatis.type.DoubleTypeHandler) {
+            value = pValue.toString();
+        } else if (pTypeHandler instanceof org.apache.ibatis.type.LongTypeHandler) {
+            value = pValue.toString();
+        } else if (pTypeHandler instanceof org.apache.ibatis.type.DateTypeHandler) {
+            value = "'" + DateFormatUtils.format((Date) pValue, "yyyy-MM-dd hh:mm:ss") + "'";
+        } else if ((pValue instanceof byte[])) {
+            value = "0x" + bytesToHexString((byte[]) pValue);
+        } else if ((pValue instanceof Byte[])) {
+            value = "0x" + bytesToHexString((Byte[]) pValue);
         }
         return value;
     }
